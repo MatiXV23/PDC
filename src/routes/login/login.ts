@@ -11,21 +11,24 @@ type SignOptions = jwt.SignOptions;
 
 const loginRoute: FastifyPluginAsync = async (fastify, opts) => {
         
-    fastify.post('/', {
-        schema: {
-            summary: "Login",
-            description: "En esta ruta el usuario puede logearse",
-            tags: ["default"],
-            body: Type.Object({ credencialesSchema: credencialesSchema }),
-            response: {
-                200: { token: Type.String()}
-            },
-            security: [
-                { bearerAuth: []}
-            ]
-        },
-    },
+    fastify.post('/', 
+    //     /*NO BORRAR NADA, HAY QUE DESCOMENTAR TODO ESTO CUANDO ESTE PRONTA LA DB! Salu2*/
+    //     {
+    //     schema: {
+    //         summary: "Login",
+    //         description: "En esta ruta el usuario puede logearse",
+    //         tags: ["default"],
+    //         body: Type.Object({ credencialesSchema: credencialesSchema }),
+    //         response: {
+    //             200: { token: Type.String()}
+    //         },
+    //         security: [
+    //             { bearerAuth: []}
+    //         ]
+    //     },
+    // },
     async (request, reply) => {
+        throw new PC_NotImplemented('POST /login - Despacio gente ente en obra');
         const cuenta = await UsuariosDB.getUserByCredentials(request.body);
         if (!cuenta) {
             throw new PC_NoAuthorized("Credenciales incorrectas!");

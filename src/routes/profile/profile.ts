@@ -1,4 +1,4 @@
-import { PC_BadRequest } from '../../errors/errors.ts';
+import { PC_BadRequest, PC_NotImplemented } from '../../errors/errors.ts';
 import { usuarioSchema } from '../../models/usuario_model.ts';
 import type { Usuario } from '../../models/usuario_model.ts';
 import { Type } from '@fastify/type-provider-typebox';
@@ -7,21 +7,8 @@ import { type FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
 const profileRoute: FastifyPluginAsyncTypebox = async (fastify) => {
 
     fastify.get('/', {
-        // schema: {
-        //     summary: "Perfil del usuario",
-        //     description: "En esta ruta el usuario puede ver su perfil",
-        //     tags: ["login"],
-        //     response: {
-        //         200: usuarioSchema
-        //     },
-        //     security: [
-        //         { bearerAuth: [] }
-        //     ],
-        // },
-        // OnRequest: async (request, reply) => {
-        //     await request.jwtVerify();
-        // },
         handler: async function (request, reply) {
+            throw new PC_NotImplemented('GET /profile - Despacio gente ente en obra');
             const { id_usuario } = request.user as Usuario;
             return fastify.UsersDB.getById(id_usuario);
         }
@@ -39,6 +26,7 @@ const profileRoute: FastifyPluginAsyncTypebox = async (fastify) => {
         },
     },
     async function handler(request, reply) {
+        throw new PC_NotImplemented('PUT /profile - Despacio gente ente en obra');
         const {id_usuario} = request.params;
         const {username, activo} = request.body;
         const id_body = request.body.id_usuario;
