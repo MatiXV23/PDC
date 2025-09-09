@@ -12,5 +12,6 @@ const conectionLink = `postgres://${USERNAME}:${PASSWORD}@${DOMAIN}:${PORT}/${DA
 export default fp(async (fastify) => {
     fastify.register(fastifyPostgres, {
         connectionString: conectionLink
-    })  
+    })
 });
+
