@@ -1,7 +1,9 @@
 import Fastify from 'fastify';
 import { join } from 'path';
 import autoload from '@fastify/autoload';
-import jwtPlugin from './src/plugins/jwt';
+import jwtPlugin from './src/plugins/jwt.ts';
+import postgres from './src/plugins/postgres.ts';
+import usersDB from './src/decorators/usersDB/usersDB_decorator.ts';
 
 const fastify = Fastify({
     logger: {
@@ -16,10 +18,12 @@ const fastify = Fastify({
     }
 });
 
-fastify.register(jwtPlugin);
+await fastify.register(jwtPlugin);
 await fastify.register(autoload, {
     dir: join(import.meta.dirname, 'src', 'routes')
 });
+await fastify.register(postgres)
+await fastify.register(usersDB)
 
 const port = Number(process.env.PORT) || 3000;
 const host = '::';

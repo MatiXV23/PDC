@@ -1,9 +1,13 @@
-import Fastify, { type FastifyPluginAsync } from 'fastify';
+import  { type FastifyPluginAsync } from 'fastify';
 import { PC_NoAuthorized, PC_NotImplemented } from '../../errors/errors.ts';
 import { Type } from '@fastify/type-provider-typebox';
-import { credencialesSchema, Usuario } from '../../models/usuario_model.ts';
+import { credencialesSchema } from '../../models/usuario_model.ts';
+import type { Usuario } from '../../models/usuario_model.ts';
 import { UsuariosDB } from '../../services/usuarios_db_service.ts';
-import { SignOptions } from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
+
+const { sign, verify, decode } = jwt;
+type SignOptions = jwt.SignOptions;
 
 const loginRoute: FastifyPluginAsync = async (fastify, opts) => {
         
@@ -11,7 +15,7 @@ const loginRoute: FastifyPluginAsync = async (fastify, opts) => {
         schema: {
             summary: "Login",
             description: "En esta ruta el usuario puede logearse",
-            tags: ["login"],
+            tags: ["default"],
             body: Type.Object({ credencialesSchema: credencialesSchema }),
             response: {
                 200: { token: Type.String()}
