@@ -6,33 +6,29 @@ import { PC_InternalServerError, PC_NotFound, PC_NotImplemented } from "../error
 
 
 export class UsuariosDB extends BaseRepository<Usuario> {
+    baseQuery = `SELECT 
+                    u.id_usuario, u.username, u.email, u.nombres, u.apellidos, u.edad, u.sexo, u.foto_url, string_agg(r.nombre, ', ') AS rol
+                FROM usuarios u
+                LEFT JOIN usuarios_roles ru ON u.id_usuario = ru.id_usuario
+                LEFT JOIN roles r ON ru.id_rol = r.id_rol
+                `
 
     constructor(fastify: FastifyInstance) {
         super(fastify)
     }
 
+    
+
     async getAll(): Promise<Usuario[]> {
-        const users = await this.pg.query<Usuario>(`
-            SELECT 
-                u.* , 
-                string_agg(r.nombre, ', ') AS rol
-            FROM usuarios u
-            LEFT JOIN usuarios_roles ru ON u.id_usuario = ru.id_usuario
-            LEFT JOIN roles r ON ru.id_rol = r.id_rol
-            GROUP BY u.id_usuario; 
-        `)
+        const users = await this.pg.query<Usuario>(this.baseQuery+'GROUP BY u.id_usuario;')
 
         return users.rows
     }
     
     async getById(id:number): Promise<Usuario> {
         
-        const query = `SELECT u.* , string_agg(r.nombre, ', ') AS roles
-                        FROM usuarios u
-                        LEFT JOIN usuarios_roles ru ON u.id_usuario = ru.id_usuario
-                        LEFT JOIN roles r ON ru.id_rol = r.id_rol
-                        WHERE u.id_usuario = $1
-                        GROUP BY u.id_usuario;`
+        const query = this.baseQuery + `WHERE u.id_usuario = $1
+                                        GROUP BY u.id_usuario;`
         const vars = [id]
         const res = await this.pg.query<Usuario>(query, vars)
         
