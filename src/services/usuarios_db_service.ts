@@ -5,7 +5,6 @@ import { PC_NotFound, PC_NotImplemented } from "../errors/errors.ts";
 
 
 export class UsuariosDB extends BaseRepository<Usuario> {
-    static getUserByCredentials: any;
 
     constructor(fastify: FastifyInstance) {
         super(fastify)
