@@ -6,6 +6,7 @@ import { PC_InternalServerError, PC_NotFound, PC_NotImplemented } from "../error
 
 
 export class UsuariosDB extends BaseRepository<Usuario> {
+    static getUserByCredentials: any;
 
     constructor(fastify: FastifyInstance) {
         super(fastify)
