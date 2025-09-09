@@ -6,7 +6,7 @@ export const usuarioSchema = Type.Object({
     username: Type.String(),
     email: Type.String(),
     activo: Type.Boolean(),
-    fecha_registro: Type.Date(),
+    fecha_registro: Type.String({ format: "date" }),
     reputacion: Type.Number(),
     preferencias: Type.Optional(Type.Object({})),
     fecha_nacimiento: Type.String(),

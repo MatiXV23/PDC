@@ -1,8 +1,7 @@
-import fastify from "fastify";
 import { BaseRepository } from "../models/baseRepository.ts";
 import  type { Usuario, Credenciales } from "../models/usuario_model.ts";
 import { type FastifyInstance } from "fastify";
-import { PC_InternalServerError, PC_NotFound, PC_NotImplemented } from "../errors/errors.ts";
+import { PC_NotFound, PC_NotImplemented } from "../errors/errors.ts";
 
 
 export class UsuariosDB extends BaseRepository<Usuario> {

@@ -1,10 +1,10 @@
 import Fastify from 'fastify';
 import { join } from 'path';
 import autoload from '@fastify/autoload';
-import swagger from '@fastify/swagger'; 
-import swaggerUi from '@fastify/swagger-ui';
+import jwtPlugin from './src/plugins/jwt.ts';
 import postgres from './src/plugins/postgres.ts';
 import usersDB from './src/decorators/usersDB/usersDB_decorator.ts';
+import swagger from './src/plugins/swagger.ts';
 
 const fastify = Fastify({
     logger: {
@@ -19,30 +19,8 @@ const fastify = Fastify({
     }
 });
 
-// Registra y configura el plugin de swagger
-await fastify.register(swagger, {
-    swagger: {
-        info: {
-            title: 'API de PDC',
-            description: 'Documentación de la API del proyecto PDC',
-            version: '1.0.0'
-        },
-        host: 'localhost:3000',
-        schemes: ['http'],
-        consumes: ['application/json'],
-        produces: ['application/json']
-    }
-});
-
-// Registra el plugin para la interfaz gráfica de swagger
-await fastify.register(swaggerUi, {
-    routePrefix: '/docs',
-    uiConfig: {
-        docExpansion: 'full',
-        deepLinking: false
-    }
-});
-
+await fastify.register (swagger);
+await fastify.register(jwtPlugin);
 await fastify.register(autoload, {
     dir: join(import.meta.dirname, 'src', 'routes')
 });
