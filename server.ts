@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import { join } from 'path';
 import autoload from '@fastify/autoload';
+import jwtPlugin from './src/plugins/jwt';
 
 const fastify = Fastify({
     logger: {
@@ -15,6 +16,7 @@ const fastify = Fastify({
     }
 });
 
+fastify.register(jwtPlugin);
 await fastify.register(autoload, {
     dir: join(import.meta.dirname, 'src', 'routes')
 });
