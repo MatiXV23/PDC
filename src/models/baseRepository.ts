@@ -1,4 +1,13 @@
+import type { FastifyInstance } from "fastify";
+
+
 export abstract class BaseRepository<T> {
+    protected pg: FastifyInstance["pg"];
+
+    constructor(fastify: FastifyInstance) {
+        this.pg = fastify.pg
+    }
+
     abstract getAll(): Promise<T[]>
     
     abstract getById(id:number): Promise<T>
