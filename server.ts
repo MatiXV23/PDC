@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import { join } from 'path';
+import autoload from '@fastify/autoload';
 
 const fastify = Fastify({
     logger: {
@@ -14,17 +15,12 @@ const fastify = Fastify({
     }
 });
 
-await fastify.register(import('@fastify/autoload'), {
-    dir: join(import.meta.dirname, 'src', 'routes'),
-    options: {
-        prefix: '/api' 
-    }
+await fastify.register(autoload, {
+    dir: join(import.meta.dirname, 'src', 'routes')
 });
-
 
 const port = Number(process.env.PORT) || 3000;
 const host = '::';
-
 
 try {
     await fastify.listen({ port, host });
