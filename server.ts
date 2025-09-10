@@ -1,8 +1,10 @@
 import Fastify from 'fastify';
 import { join } from 'path';
 import autoload from '@fastify/autoload';
+import jwtPlugin from './src/plugins/jwt.ts';
 import postgres from './src/plugins/postgres.ts';
 import usersDB from './src/decorators/usersDB/usersDB_decorator.ts';
+import swagger from './src/plugins/swagger.ts';
 
 const fastify = Fastify({
     logger: {
@@ -17,6 +19,8 @@ const fastify = Fastify({
     }
 });
 
+await fastify.register (swagger);
+await fastify.register(jwtPlugin);
 await fastify.register(autoload, {
     dir: join(import.meta.dirname, 'src', 'routes')
 });
@@ -29,7 +33,7 @@ const host = '::';
 try {
     await fastify.listen({ port, host });
     fastify.log.info(`Servidor corriendo en http://localhost:${port}`);
-    fastify.log.info(`Las rutas se cargan automáticamente desde src/routes/`);
+    fastify.log.info(`La documentación de la API está en http://localhost:${port}/docs`);
 } catch (error) {
     fastify.log.error(error);
     process.exit(1);
