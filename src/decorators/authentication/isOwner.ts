@@ -1,17 +1,19 @@
 import fastifyPlugin from "fastify-plugin";
 import type { Usuario } from "../../models/usuario_model.ts";
-import { PC_Forbidden } from "../../errors/errors.ts";
+import { PC_Forbidden, PC_InternalServerError, PC_NoAuthorized } from "../../errors/errors.ts";
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 export default fastifyPlugin(async function (fastify) {
-  fastify.decorate("isAdminOrOwner", async (req, rep) => {
+  fastify.decorate("isOwner", (req, rep) => {
     const usuario = (req as any).user
-    if (!usuario.roles.includes('admin') && !(req.params.id_usuario === usuario.id_usuario)) throw new PC_Forbidden()
+                console.log(usuario)
+                if (!(req.params.id_usuario === usuario.id_usuario)) throw new PC_Forbidden()
+    return
   });
 });
 
 declare module "fastify" {
   interface FastifyInstance {
-    isAdminOrOwner(req, rep): void;
+    isOwner(req, rep): void;
   }
 }

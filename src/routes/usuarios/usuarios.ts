@@ -1,13 +1,13 @@
 import Fastify, { type FastifyPluginAsync } from 'fastify';
-import { PC_NotImplemented } from '../../errors/errors.ts';
+import { PC_Forbidden, PC_NotImplemented } from '../../errors/errors.ts';
 import { type Usuario, usuarioSchema } from '../../models/usuario_model.ts';
 import { Type } from '@fastify/type-provider-typebox';
 
 const userRoutes: FastifyPluginAsync = async (fastify, opts) => {
-
+    
     fastify.get('/',{
         schema: {
-            summary: "Obtener todos los uaurios",
+            summary: "Obtener todos los usuarios",
             tags: ["Usuarios"],
             response: {
                 200: Type.Array(usuarioSchema)
@@ -16,7 +16,8 @@ const userRoutes: FastifyPluginAsync = async (fastify, opts) => {
                 { bearerAuth: [] }
             ]
         },
-        onRequest: fastify.authenticate
+        onRequest: fastify.authenticate,
+        preHandler: fastify.isAdmin
     },
     async (request, reply) => {
         return await fastify.UsersDB.getAll()

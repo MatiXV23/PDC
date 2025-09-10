@@ -5,7 +5,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 
 export default fastifyPlugin(async function (fastify) {
   fastify.decorate("authenticate",async (req: FastifyRequest, rep: FastifyReply) => {
-    await req.jwtVerify()    
+    await req.jwtVerify()
   });
 });
 
