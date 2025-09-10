@@ -4,7 +4,7 @@ import { PC_Forbidden, PC_InternalServerError, PC_NoAuthorized } from "../../err
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 export default fastifyPlugin(async function (fastify) {
-  fastify.decorate("isOwner", (req: FastifyRequest, rep: FastifyReply) => {
+  fastify.decorate("isOwner", (req, rep) => {
     const usuario = (req as any).user
                 console.log(usuario)
                 if (!(req.params.id_usuario === usuario.id_usuario)) throw new PC_Forbidden()
@@ -14,6 +14,6 @@ export default fastifyPlugin(async function (fastify) {
 
 declare module "fastify" {
   interface FastifyInstance {
-    isOwner(req: FastifyRequest, rep: FastifyReply): void;
+    isOwner(req, rep): void;
   }
 }
