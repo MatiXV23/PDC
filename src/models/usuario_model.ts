@@ -10,7 +10,7 @@ export const usuarioSchema = Type.Object({
     edad: Type.Number(),
     sexo: Type.String(),
     foto_url: Type.Optional(Type.String()),
-    roles: Type.String()
+    roles: Type.Array(Type.String())
 })
 
 export const queryUsuarioSchema = Type.Object({

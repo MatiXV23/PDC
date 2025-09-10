@@ -1,12 +1,12 @@
 import { BaseRepository } from "../models/baseRepository.ts";
 import  type { Usuario, Credenciales } from "../models/usuario_model.ts";
-import { type FastifyInstance } from "fastify";
-import { PC_NotFound, PC_NotImplemented } from "../errors/errors.ts";
+import fastify, { type FastifyInstance } from "fastify";
+import { PC_BadRequest, PC_InternalServerError, PC_NotFound, PC_NotImplemented } from "../errors/errors.ts";
 
 
 export class UsuariosDB extends BaseRepository<Usuario> {
     #baseQuery = `SELECT 
-                    u.id_usuario, u.username, u.email, u.nombres, u.apellidos, u.edad, u.sexo, u.foto_url, string_agg(r.nombre, ', ') AS roles
+                    u.id_usuario, u.username, u.email, u.nombres, u.apellidos, u.edad, u.sexo, u.foto_url, array_agg(r.nombre) AS roles
                 FROM usuarios u
                 LEFT JOIN usuarios_roles ru ON u.id_usuario = ru.id_usuario
                 LEFT JOIN roles r ON ru.id_rol = r.id_rol
@@ -35,15 +35,74 @@ export class UsuariosDB extends BaseRepository<Usuario> {
     }
 
     async create(data: Partial<Usuario>): Promise<Usuario> {
-        throw new PC_NotImplemented()
+        let query = ` WITH nuevo_usuario AS (
+                        INSERT INTO usuarios (username, email, activo, fecha_nacimiento, nombres, apellidos, edad, sexo, foto_url)
+                        VALUES ($1, $2, True, '1980-01-01', $3, $4, $5, $6, $7)
+                        RETURNING id_usuario
+                        ),
+                        cred AS (
+                        INSERT INTO credenciales (id_usuario, password_hash)
+                        SELECT id_usuario, crypt('miPasswordSeguro', gen_salt('bf'))
+                        FROM nuevo_usuario
+                        RETURNING id_usuario
+                        ),
+                        roles AS (
+                        INSERT INTO usuarios_roles (id_usuario, id_rol)
+                        SELECT c.id_usuario, r.id_rol
+                        FROM cred c, roles r
+                        WHERE r.nombre = 'user'`
+        if (data.roles?.includes('admin')) query += `OR r.nombre = 'admin'`
+        query += `  RETURNING id_usuario)
+                    SELECT id_usuario from roles;`
+
+        const {username, email, nombres, apellidos, edad, sexo, foto_url, roles} = data
+        try{
+            const res = await this.pg.query(query, [username, email, nombres, apellidos, edad, sexo, foto_url || null])
+
+            console.log(res)
+
+            const user:Usuario = {id_usuario: res.rows[0]!, username: username!, email: email!, nombres: nombres!, apellidos: apellidos!, edad: edad!, sexo: sexo!, foto_url: foto_url, roles: roles!} 
+            return user
+        }
+        catch (err){
+            throw new PC_InternalServerError(err.detail)
+        }
     }
 
     async update(id: number, data: Partial<Usuario>): Promise<Usuario> {
-        throw new PC_NotImplemented()
+        let query = `UPDATE usuarios
+                        SET 
+                    `
+        let cont = 2;
+        let vars = [id]
+        
+        for (const key in data){
+            if (!data[key]) continue
+
+            query += `${key} = $${cont},`
+            vars.push(data[key])
+            cont++
+        }
+        query = query.slice(0, -1)
+
+        query += `  WHERE id_usuario = $1
+                    RETURNING id_usuario;`
+       
+        console.log(query)
+        console.log(vars)
+        const res = await this.pg.query(query, vars)
+
+
+        return await this.getById(id)
     }
 
     async delete(id: number): Promise<void> {
-        throw new PC_NotImplemented()
+        const query =  `DELETE FROM usuarios
+                        WHERE id_usuario = $1;`
+        const res = await this.pg.query<Usuario>(query, [id])
+
+        if (res.rowCount === 0) throw new PC_BadRequest(`Usuario de id ${id}, no existe. Ignorando`)
+        console.log(res)
     }
 
     async findAll(data: Partial<Usuario>): Promise<Usuario[]> {
