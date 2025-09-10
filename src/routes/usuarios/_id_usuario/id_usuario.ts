@@ -21,7 +21,7 @@ const usuarioRoutes:FastifyPluginAsyncTypebox= async function(fastify, options: 
             { bearerAuth: [] }
         ]
       },
-      preHandler: [fastify.isAdmin, fastify.isOwner]
+      preHandler: fastify.isAdminOrOwner
     },
     async function handler(req, rep) {
       return fastify.UsersDB.getById(req.params.id_usuario)
@@ -43,7 +43,7 @@ const usuarioRoutes:FastifyPluginAsyncTypebox= async function(fastify, options: 
             { bearerAuth: [] }
         ]
       },
-      preHandler: [fastify.isAdmin, fastify.isOwner]
+      preHandler: fastify.isAdminOrOwner
     },
     async function handler(req, rep) {
       const { id_usuario } = req.params; 
