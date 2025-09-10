@@ -5,10 +5,10 @@ import { Type } from '@fastify/type-provider-typebox';
 
 const userRoutes: FastifyPluginAsync = async (fastify, opts) => {
     
-    fastify.get('/',{
+    fastify.get('',{
         schema: {
             summary: "Obtener todos los usuarios",
-            tags: ["Usuarios"],
+            tags: ["usuarios"],
             response: {
                 200: Type.Array(usuarioSchema)
             },

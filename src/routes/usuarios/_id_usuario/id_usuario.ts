@@ -35,7 +35,7 @@ const usuarioRoutes:FastifyPluginAsyncTypebox= async function(fastify, options: 
         description: "Esta ruta permite modificar un nuevo usuario.",
         tags: ["usuarios"],
         params: Type.Pick(usuarioSchema, ["id_usuario"]),
-        body: Type.Partial(usuarioSchema),
+        body: Type.Partial( Type.Omit(usuarioSchema, ["roles", "id_usuario"])),
         response: {
           204: Type.Null()
         },
