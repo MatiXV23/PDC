@@ -10,19 +10,16 @@ type SignOptions = jwt.SignOptions;
 
 const loginRoute: FastifyPluginAsync = async (fastify, opts) => {
         
-    fastify.post('/', 
+    fastify.post('', 
         {
         schema: {
             summary: "Login",
             description: "En esta ruta el usuario puede logearse",
-            tags: ["default"],
+            tags: ["Auth"],
             body: credencialesSchema,
             response: {
                 200: { token: Type.String()}
-            },
-            security: [
-                { bearerAuth: []}
-            ]
+            }
         },
     },
     async (request, reply) => {
