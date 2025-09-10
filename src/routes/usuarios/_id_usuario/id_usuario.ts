@@ -67,6 +67,7 @@ const usuarioRoutes:FastifyPluginAsyncTypebox= async function(fastify, options: 
             { bearerAuth: [] }
         ]
       },
+      preHandler: fastify.isAdmin
     },
     async function handler(req, rep) {
       const { id_usuario } = req.params;

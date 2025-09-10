@@ -61,7 +61,7 @@ export class UsuariosDB extends BaseRepository<Usuario> {
 
             console.log(res)
 
-            const user:Usuario = {id_usuario: res.rows[0]!, username: username!, email: email!, nombres: nombres!, apellidos: apellidos!, edad: edad!, sexo: sexo!, foto_url: foto_url, roles: roles!} 
+            const user:Usuario = {id_usuario: res.rows[0]!.id_usuario, username: username!, email: email!, nombres: nombres!, apellidos: apellidos!, edad: edad!, sexo: sexo!, foto_url: foto_url, roles: roles!} 
             return user
         }
         catch (err){
