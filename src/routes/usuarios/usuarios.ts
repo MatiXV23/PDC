@@ -29,7 +29,7 @@ const userRoutes: FastifyPluginAsync = async (fastify, opts) => {
             summary: "Register",
             description: "En esta ruta el usuario puede registrarse",
             tags: ["Auth"],
-            body: Type.Omit(usuarioSchema, ["id_usuario"]),
+            body: Type.Omit(usuarioSchema, ["id_usuario", "fecha_registro"]),
             response: {
                 200: usuarioSchema
             }

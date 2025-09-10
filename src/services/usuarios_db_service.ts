@@ -6,7 +6,7 @@ import { PC_BadRequest, PC_InternalServerError, PC_NotFound, PC_NotImplemented }
 
 export class UsuariosDB extends BaseRepository<Usuario> {
     #baseQuery = `SELECT 
-                    u.id_usuario, u.username, u.email, u.nombres, u.apellidos, u.edad, u.sexo, u.foto_url, array_agg(r.nombre) AS roles
+                    u.*, array_agg(r.nombre) AS roles
                 FROM usuarios u
                 LEFT JOIN usuarios_roles ru ON u.id_usuario = ru.id_usuario
                 LEFT JOIN roles r ON ru.id_rol = r.id_rol
@@ -36,8 +36,8 @@ export class UsuariosDB extends BaseRepository<Usuario> {
 
     async create(data: Partial<Usuario>): Promise<Usuario> {
         let query = ` WITH nuevo_usuario AS (
-                        INSERT INTO usuarios (username, email, activo, fecha_nacimiento, nombres, apellidos, edad, sexo, foto_url)
-                        VALUES ($1, $2, True, '1980-01-01', $3, $4, $5, $6, $7)
+                        INSERT INTO usuarios (username, email, activo, reputacion, fecha_nacimiento, nombres, apellidos, edad, sexo, foto_url)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
                         RETURNING id_usuario
                         ),
                         cred AS (
@@ -55,13 +55,13 @@ export class UsuariosDB extends BaseRepository<Usuario> {
         query += `  RETURNING id_usuario)
                     SELECT id_usuario from roles;`
 
-        const {username, email, nombres, apellidos, edad, sexo, foto_url, roles} = data
+        const {username, email, activo, reputacion, fecha_nacimiento, nombres, apellidos, edad, sexo, foto_url, roles} = data
         try{
-            const res = await this.pg.query(query, [username, email, nombres, apellidos, edad, sexo, foto_url || null])
+            const res = await this.pg.query(query, [username, email, activo, reputacion, fecha_nacimiento, nombres, apellidos, edad, sexo, foto_url || null])
 
             console.log(res)
 
-            const user:Usuario = {id_usuario: res.rows[0]!.id_usuario, username: username!, email: email!, nombres: nombres!, apellidos: apellidos!, edad: edad!, sexo: sexo!, foto_url: foto_url, roles: roles!} 
+            const user:Usuario = await this.getById(res.row[0].id_usuario)
             return user
         }
         catch (err){

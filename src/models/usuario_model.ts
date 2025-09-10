@@ -3,14 +3,18 @@ import type { Static } from '@sinclair/typebox'
 
 export const usuarioSchema = Type.Object({
     id_usuario: Type.Number({minimum: 1}),
-    username: Type.String(),
+    username: Type.String({maximum: 15}),
     email: Type.String(),
-    nombres: Type.String(),
-    apellidos: Type.String(),
+    activo: Type.Boolean(),
+    reputacion: Type.Number({minimum: 0, maximum: 999}),
+    fecha_registro: Type.String({ format: 'date-time'}),
+    fecha_nacimiento: Type.String({ format: 'date'}),
+    nombres: Type.String({maximum:50}),
+    apellidos: Type.String({maximum:50}),
     edad: Type.Number(),
-    sexo: Type.String(),
-    foto_url: Type.Optional(Type.String()),
-    roles: Type.Array(Type.String())
+    sexo: Type.String({enum: ["M", "F"]}),
+    foto_url: Type.Optional(Type.String({maximum:520})),
+    roles: Type.Array(Type.String({enum: ["user", "admin"]}))
 })
 
 export const queryUsuarioSchema = Type.Object({
@@ -20,8 +24,8 @@ export const queryUsuarioSchema = Type.Object({
 })
 
 export const credencialesSchema = Type.Object({
-    password : Type.String({minLength: 2}),
-    username : Type.String({minLength: 2})
+    username : Type.String({minLength: 2, default: 'admin'}),
+    password : Type.String({minLength: 2, default: 'contraseña'})
 })
 
 
