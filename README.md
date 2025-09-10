@@ -39,5 +39,6 @@ ___
 ___
 ### 👀 Informe/consultas sobre la corrección 👀
 -  Antes de tener el swagger junto al equipo estuvimos realizando algunas peticiones y pruebas con el programa 'postman' ya que nos parecio bastante más rápido y practico.
+-  El internet de la facultad no permite conectar la vm a la maquina "normal", para conectar el postgres de la vm al proyecto es necesario utilizar un wifi externo a la facultad.
 -  Por ahora todo correcto 👍
 ___
