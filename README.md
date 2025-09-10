@@ -27,7 +27,8 @@ ___
 | Configurar autoload para que cargue los plugins de la carpeta src/plugins | Verificar el funcionamiento de las rutas autogeneradas en el swagger | ... |
 ___
 ### 📎 Herramienta de gestion del proyecto 📎
-[![Accede a jira](https://expansionyeconomia.com/wp-content/uploads/2025/01/jira-1024x531.webp)](https://webdev-cnp.atlassian.net/jira/software/projects/PBF/boards/67)
+#### Click en la imagen para visitar nuestro Jira con la asignación de tareas del proyecto.
+[![Accede a jira](https://www.yunbitsoftware.com/blog/wp-content/uploads/2021/02/21430-scaled-e1614339566329.jpg)](https://webdev-cnp.atlassian.net/jira/software/projects/PBF/boards/67)
 ___
 ### 📡 Servidor 📡
 #### Dentro del proyecto es posible ejecutar el servidor:
@@ -37,5 +38,6 @@ ___
 #### Luego de ejecutar el servidor ya podremos hacerle las peticiones
 ___
 ### 👀 Informe/consultas sobre la corrección 👀
+-  Antes de tener el swagger junto al equipo estuvimos realizando algunas peticiones y pruebas con el programa 'postman' ya que nos parecio bastante más rápido y practico.
 -  Por ahora todo correcto 👍
 ___
