@@ -2,8 +2,7 @@ import  { type FastifyPluginAsync } from 'fastify';
 import { PC_NoAuthorized, PC_NotImplemented } from '../../errors/errors.ts';
 import { Type } from '@fastify/type-provider-typebox';
 import { credencialesSchema } from '../../models/usuario_model.ts';
-import type { Usuario } from '../../models/usuario_model.ts';
-import { UsuariosDB } from '../../services/usuarios_db_service.ts';
+import type { Credenciales, Usuario } from '../../models/usuario_model.ts';
 import jwt from "jsonwebtoken";
 
 const { sign, verify, decode } = jwt;
@@ -27,12 +26,11 @@ const loginRoute: FastifyPluginAsync = async (fastify, opts) => {
         },
     },
     async (request, reply) => {
-        throw new PC_NotImplemented('POST /login - Despacio gente ente en obra');
-        const cuenta = await UsuariosDB.getUserByCredentials(request.body);
+        const cuenta = await fastify.UsersDB.getUserByCredentials(request.body as Credenciales);
         if (!cuenta) {
             throw new PC_NoAuthorized("Credenciales incorrectas!");
         }
-        const payload: Usuario = cuenta.usuario;
+        const payload: Usuario = cuenta;
 
         const signOptions: SignOptions = {
             expiresIn: "8h"

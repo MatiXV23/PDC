@@ -77,7 +77,7 @@ export class UsuariosDB extends BaseRepository<Usuario> {
         let vars = [id]
         
         for (const key in data){
-            if (!data[key]) continue
+            if (!data[key] || key === 'id_usuario') continue
 
             query += `${key} = $${cont},`
             vars.push(data[key])
