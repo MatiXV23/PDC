@@ -1,14 +1,10 @@
 import Fastify from 'fastify';
 import { join } from 'path';
 import autoload from '@fastify/autoload';
-import jwtPlugin from './src/plugins/jwt.ts';
-import postgres from './src/plugins/postgres.ts';
-import usersDB from './src/decorators/usersDB/usersDB_decorator.ts';
-import swagger from './src/plugins/swagger.ts';
 
 const fastify = Fastify({
     logger: {
-        level: 'info',
+        level: process.env.FASTIFY_LOG_LEVEL || 'info',
         transport: {
             target: 'pino-pretty',
             options: {
@@ -19,15 +15,20 @@ const fastify = Fastify({
     }
 });
 
-await fastify.register (swagger);
-await fastify.register(jwtPlugin);
 await fastify.register(autoload, {
-    dir: join(import.meta.dirname, 'src', 'routes')
+    dir: join(import.meta.dirname, 'src', 'plugins')
 });
-await fastify.register(postgres)
-await fastify.register(usersDB)
 
-const port = Number(process.env.PORT) || 3000;
+await fastify.register(autoload, {
+    dir: join(import.meta.dirname, 'src', 'decorators')
+});
+
+await fastify.register(autoload, {
+    dir: join(import.meta.dirname, 'src', 'routes'),
+    routeParams: true
+});
+
+const port = Number(process.env.FASTIFY_PORT) || 3000;
 const host = '::';
 
 try {

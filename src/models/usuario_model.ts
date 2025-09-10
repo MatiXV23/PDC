@@ -20,11 +20,16 @@ export const queryUsuarioSchema = Type.Object({
 })
 
 export const credencialesSchema = Type.Object({
-    passwordHash : Type.String({minLength: 2}),
+    password : Type.String({minLength: 2}),
     username : Type.String({minLength: 2})
 })
 
 
 export type Credenciales = Static<typeof credencialesSchema>
 export type Usuario = Static<typeof usuarioSchema>
+
+
+export type UsuarioM = Usuario & {
+    isAdmin() : () => boolean
+}
 
