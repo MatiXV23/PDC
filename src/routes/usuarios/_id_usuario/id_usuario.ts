@@ -35,7 +35,7 @@ const usuarioRoutes:FastifyPluginAsyncTypebox= async function(fastify, options: 
         description: "Esta ruta permite modificar un nuevo usuario.",
         tags: ["usuarios"],
         params: Type.Pick(usuarioSchema, ["id_usuario"]),
-        body: Type.Partial( Type.Omit(usuarioSchema, ["roles", "id_usuario"])),
+        body: Type.Partial( Type.Omit(usuarioSchema, ["roles", "id_usuario", "fecha_registro"])),
         response: {
           204: Type.Null()
         },
@@ -46,10 +46,7 @@ const usuarioRoutes:FastifyPluginAsyncTypebox= async function(fastify, options: 
       preHandler: fastify.isAdminOrOwner
     },
     async function handler(req, rep) {
-      const { id_usuario } = req.params; 
-      const id_body = req.body.id_usuario 
-
-      if (id_usuario !== id_body) throw new PC_BadRequest("Las ids del body y pasada por parametro, no coinciden.")
+      const { id_usuario } = req.params;
       await fastify.UsersDB.update(id_usuario, req.body);
       return rep.code(204).send();
     }
