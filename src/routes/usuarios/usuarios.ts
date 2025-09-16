@@ -31,7 +31,7 @@ const userRoutes: FastifyPluginAsync = async (fastify, opts) => {
             tags: ["Auth"],
             body: Type.Omit(usuarioSchema, ["id_usuario", "fecha_registro"]),
             response: {
-                200: usuarioSchema
+                201: usuarioSchema
             }
         },
     },
