@@ -34,8 +34,8 @@ const usuarioRoutes:FastifyPluginAsyncTypebox= async function(fastify, options: 
         summary: "Modificar usuarios",
         description: "Esta ruta permite modificar un nuevo usuario.",
         tags: ["usuarios"],
-        params: Type.Pick(usuarioSchema, ["id_usuario"]),
-        body: Type.Partial( Type.Omit(usuarioSchema, ["roles", "id_usuario", "fecha_registro"])),
+        params: Type.Pick(usuarioSchema, ["id_usuario"]), // Le saque el Type.Omit ya que el put debe modificar TODOS los atributos, si modifica solo algunos es un PATCH
+        body: usuarioSchema,
         response: {
           204: Type.Null()
         },
