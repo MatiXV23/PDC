@@ -3,17 +3,17 @@ import type { Static } from '@sinclair/typebox'
 
 export const usuarioSchema = Type.Object({
     id_usuario: Type.Number({minimum: 1}),
-    username: Type.String({maximum: 15}),
+    username: Type.String({maxLength: 15}),
     email: Type.String(),
     activo: Type.Boolean(),
     reputacion: Type.Number({minimum: 0, maximum: 999}),
     fecha_registro: Type.String({ format: 'date-time'}),
     fecha_nacimiento: Type.String({ format: 'date'}),
-    nombres: Type.String({maximum:50}),
-    apellidos: Type.String({maximum:50}),
+    nombres: Type.String({maxLength:50}),
+    apellidos: Type.String({maxLength:50}),
     edad: Type.Number(),
     sexo: Type.String({enum: ["M", "F"]}),
-    foto_url: Type.Optional(Type.String({maximum:520})),
+    foto_url: Type.Optional(Type.String({maxLength:520})),
     roles: Type.Array(Type.String({enum: ["user", "admin"]}))
 })
 

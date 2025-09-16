@@ -28,16 +28,16 @@ const userRoutes: FastifyPluginAsync = async (fastify, opts) => {
         schema: {
             summary: "Register",
             description: "En esta ruta el usuario puede registrarse",
-            tags: ["Auth"],
+            tags: ["Auth","usuarios"],
             body: Type.Omit(usuarioSchema, ["id_usuario", "fecha_registro"]),
             response: {
-                200: usuarioSchema
+                201: usuarioSchema
             }
         },
     },
     async (request, reply) => {
         const user: Usuario = await fastify.UsersDB.create(request.body as Usuario)
-        return user 
+        return reply.code(201).send(user) 
     });
 };
 
