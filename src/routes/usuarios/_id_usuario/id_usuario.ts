@@ -43,7 +43,12 @@ const usuarioRoutes:FastifyPluginAsyncTypebox= async function(fastify, options: 
             { bearerAuth: [] }
         ]
       },
-      preHandler: fastify.isAdminOrOwner
+            preHandler: [fastify.isAdminOrOwner, async (request, reply) => {
+
+      if (request.params !== request.body) {
+        return reply.code(400).send({ error: 'El id de params no coincide con el del body' })
+      }
+    }]
     },
     async function handler(req, rep) {
       const { id_usuario } = req.params;
