@@ -11,7 +11,7 @@ export const usuarioSchema = Type.Object({
     fecha_nacimiento: Type.String({ format: 'date'}),
     nombres: Type.String({maximum:50}),
     apellidos: Type.String({maximum:50}),
-    edad: Type.Number(),
+    edad: Type.Integer(),
     sexo: Type.String({enum: ["M", "F"]}),
     foto_url: Type.Optional(Type.String({maximum:520})),
     roles: Type.Array(Type.String({enum: ["user", "admin"]}))
@@ -31,5 +31,6 @@ export const credencialesSchema = Type.Object({
 
 export type Credenciales = Static<typeof credencialesSchema>
 export type Usuario = Static<typeof usuarioSchema>
+
 
 
