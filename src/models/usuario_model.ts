@@ -33,7 +33,3 @@ export type Credenciales = Static<typeof credencialesSchema>
 export type Usuario = Static<typeof usuarioSchema>
 
 
-export type UsuarioM = Usuario & {
-    isAdmin() : () => boolean
-}
-
