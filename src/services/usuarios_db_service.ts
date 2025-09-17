@@ -35,39 +35,48 @@ export class UsuariosDB extends BaseRepository<Usuario> {
     }
 
     async create(data: Partial<Usuario>): Promise<Usuario> {
-        let query = ` WITH nuevo_usuario AS (
-                        INSERT INTO usuarios (username, email, activo, reputacion, fecha_nacimiento, nombres, apellidos, edad, sexo, foto_url)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-                        RETURNING id_usuario
-                        ),
-                        cred AS (
-                        INSERT INTO credenciales (id_usuario, password_hash)
-                        SELECT id_usuario, crypt('miPasswordSeguro', gen_salt('bf'))
-                        FROM nuevo_usuario
-                        RETURNING id_usuario
-                        ),
-                        roles AS (
-                        INSERT INTO usuarios_roles (id_usuario, id_rol)
-                        SELECT c.id_usuario, r.id_rol
-                        FROM cred c, roles r
-                        WHERE r.nombre = 'user'`
-        if (data.roles?.includes('admin')) query += `OR r.nombre = 'admin'`
-        query += `  RETURNING id_usuario)
-                    SELECT id_usuario from roles;`
+    // ... Tu código SQL
+    let query = ` WITH nuevo_usuario AS (
+        INSERT INTO usuarios (username, email, activo, reputacion, fecha_nacimiento, nombres, apellidos, edad, sexo, foto_url)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        RETURNING id_usuario
+        ),
+        cred AS (
+        INSERT INTO credenciales (id_usuario, password_hash)
+        SELECT id_usuario, crypt('miPasswordSeguro', gen_salt('bf'))
+        FROM nuevo_usuario
+        RETURNING id_usuario
+        ),
+        roles_insertados AS (
+        INSERT INTO usuarios_roles (id_usuario, id_rol)
+        -- *** CORRECCIÓN: USAR JOIN EN LUGAR DE COMAS ***
+        SELECT c.id_usuario, r.id_rol
+        FROM cred c
+        JOIN roles r ON (r.nombre = 'user'
+    `
+    if (data.roles?.includes('admin')) query += `OR r.nombre = 'admin')`
+    else query += `)` // Asegurar que el paréntesis se cierre si no hay rol de admin
+    query += ` RETURNING id_usuario)
+    SELECT id_usuario from roles_insertados;`
 
-        const {username, email, activo, reputacion, fecha_nacimiento, nombres, apellidos, edad, sexo, foto_url, roles} = data
-        try{
-            const res = await this.pg.query(query, [username, email, activo, reputacion, fecha_nacimiento, nombres, apellidos, edad, sexo, foto_url || null])
-
-            console.log(res)
-
-            const user:Usuario = await this.getById(res.row[0].id_usuario)
-            return user
+    const {username, email, activo, reputacion, fecha_nacimiento, nombres, apellidos, edad, sexo, foto_url, roles} = data
+    try{
+        const res = await this.pg.query(query, [username, email, activo, reputacion, fecha_nacimiento, nombres, apellidos, edad, sexo, foto_url || null])
+        
+        // CORRECCIÓN: Reemplazamos la llamada a getById por una consulta directa
+        // para garantizar que devolvemos un objeto plano y serializable.
+        const createdUserResult = await this.pg.query(this.#baseQuery + ` WHERE u.id_usuario = $1 GROUP BY u.id_usuario;`, [res.rows[0].id_usuario]);
+        
+        if (createdUserResult.rowCount === 0) {
+            throw new PC_InternalServerError('El usuario fue creado, pero no se pudo recuperar.')
         }
-        catch (err){
-            throw new PC_InternalServerError(err.detail)
-        }
+        
+        return createdUserResult.rows[0];
     }
+    catch (err){
+        throw new PC_InternalServerError(err.message)
+    }
+}
 
     async update(id: number, data: Partial<Usuario>): Promise<Usuario> {
         let query = `UPDATE usuarios
