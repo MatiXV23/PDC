@@ -71,7 +71,7 @@ export class UsuariosDB extends BasePgRepository<Usuario> {
         let vars = [id]
         
         for (const key in data){
-            if (!data[key] || key === 'id_usuario') continue
+            if (!data[key] || key === 'id_usuario' || key === 'roles') continue
 
             query += `${key} = $${cont},`
             vars.push(data[key])
@@ -79,14 +79,36 @@ export class UsuariosDB extends BasePgRepository<Usuario> {
         }
         query = query.slice(0, -1)
 
-        query += `  WHERE id_usuario = $1
-                    RETURNING id_usuario;`
-       
-        console.log(query)
-        console.log(vars)
-        const res = await this.pool.query(query, vars)
+        query += `  WHERE id_usuario = $1;`
+        await this.pool.query(query, vars)
 
+        const roles = data["roles"] 
+        if (roles) {
+            console.log(roles)
+            await this.pool.query(/*sql*/`
+                DELETE FROM usuarios_roles
+                WHERE id_rol IN (
+                    SELECT r.id_rol
+                    FROM roles r
+                    WHERE r.nombre <> ALL($2)
+                )
+                AND id_usuario = $1;
+            `, [id, roles])
 
+            await this.pool.query(/*sql*/`
+                INSERT INTO usuarios_roles (id_usuario, id_rol)
+                SELECT $1, r.id_rol
+                FROM roles r
+                WHERE r.nombre = ANY($2)
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM usuarios_roles ur
+                    WHERE ur.id_usuario = $1
+                        AND ur.id_rol = r.id_rol
+                );
+                `, [id, roles])
+        }
+        
         return await this.getById(id)
     }
 
@@ -95,7 +117,7 @@ export class UsuariosDB extends BasePgRepository<Usuario> {
                         WHERE id_usuario = $1;`
         const res = await this.pool.query<Usuario>(query, [id])
 
-        if (res.rowCount === 0) throw new PC_BadRequest(`Usuario de id ${id}, no existe. Ignorando`)
+        if (res.rowCount === 0) throw new PC_NotFound(`Usuario de id ${id}, no existe. Ignorando`)
         console.log(res)
     }
 
