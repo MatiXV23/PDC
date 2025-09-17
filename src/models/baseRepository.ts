@@ -1,13 +1,12 @@
 import type { FastifyInstance } from "fastify";
+import { Pool } from "pg";
 
 
-export abstract class BaseRepository<T> {
-    protected pg: FastifyInstance["pg"];
-
-    constructor(fastify: FastifyInstance) {
-        this.pg = fastify.pg
+export abstract class BasePgRepository<T> {
+    protected pool: Pool
+    constructor(pool: Pool){
+        this.pool = pool
     }
-
     abstract getAll(): Promise<T[]>
     
     abstract getById(id:number): Promise<T>
